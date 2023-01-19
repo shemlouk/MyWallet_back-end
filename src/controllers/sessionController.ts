@@ -17,6 +17,13 @@ class sessionController {
     SESSIONS.insertOne({ user_id: user._id, token, time: Date.now() });
     res.send({ token });
   }
+  async delete(req: Request, res: Response) {
+    const token = req.get("authorization")?.replace(/\"|(Bearer )/g, "");
+    if (!token) return res.sendStatus(401);
+    const { deletedCount } = await SESSIONS.deleteOne({ token: token });
+    if (!deletedCount) return res.sendStatus(404);
+    res.sendStatus(200);
+  }
 }
 
 export default new sessionController();
