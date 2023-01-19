@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { recordSchema } from "../schemas";
 import { RECORDS } from "../database";
+import { ObjectId } from "mongodb";
 
 class recordController {
   async create(req: Request, res: Response) {
@@ -19,6 +20,22 @@ class recordController {
         user_id: res.locals.userId,
       }).toArray();
       res.send(records);
+    } catch (err) {
+      return res.status(500).json(err);
+    }
+  }
+  async delete(req: Request, res: Response) {
+    if (req.params.id.length !== 24) return res.sendStatus(422);
+    try {
+      const query = {
+        $and: [
+          { _id: new ObjectId(req.params.id) },
+          { user_id: res.locals.userId },
+        ],
+      };
+      const { deletedCount } = await RECORDS.deleteOne(query);
+      if (!deletedCount) return res.sendStatus(404);
+      res.sendStatus(200);
     } catch (err) {
       return res.status(500).json(err);
     }
