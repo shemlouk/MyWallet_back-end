@@ -7,5 +7,6 @@ const route = Router();
 route.use(sessionAuthentication);
 
 route.post("/record", recordController.create);
+route.get("/record", recordController.read);
 
 export default route;
