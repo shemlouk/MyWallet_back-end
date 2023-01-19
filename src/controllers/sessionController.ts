@@ -18,10 +18,8 @@ class sessionController {
     res.send({ token });
   }
   async delete(req: Request, res: Response) {
-    const token = req.get("authorization")?.replace(/\"|(Bearer )/g, "");
-    if (!token) return res.sendStatus(401);
-    const { deletedCount } = await SESSIONS.deleteOne({ token: token });
-    if (!deletedCount) return res.sendStatus(404);
+    const token = res.locals.token;
+    SESSIONS.deleteOne(token);
     res.sendStatus(200);
   }
 }
