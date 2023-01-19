@@ -9,18 +9,26 @@ class sessionController {
     const { error } = signInSchema.validate(req.body, { abortEarly: false });
     if (error) return res.status(422).json(error.details);
     const { email, password } = req.body;
-    const user = await USERS.findOne({ email });
-    if (!user) return res.sendStatus(404);
-    const validation = bcrypt.compareSync(password, user.password);
-    if (!validation) return res.sendStatus(401);
-    const token = uuid();
-    SESSIONS.insertOne({ user_id: user._id, token, time: Date.now() });
-    res.send({ token });
+    try {
+      const user = await USERS.findOne({ email });
+      if (!user) return res.sendStatus(404);
+      const validation = bcrypt.compareSync(password, user.password);
+      if (!validation) return res.sendStatus(401);
+      const token = uuid();
+      SESSIONS.insertOne({ user_id: user._id, token, time: Date.now() });
+      res.send({ token });
+    } catch (err) {
+      res.status(500).json(err);
+    }
   }
   async delete(req: Request, res: Response) {
     const token = res.locals.token;
-    SESSIONS.deleteOne(token);
-    res.sendStatus(200);
+    try {
+      SESSIONS.deleteOne(token);
+      res.sendStatus(200);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   }
 }
 
