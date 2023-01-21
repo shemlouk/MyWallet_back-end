@@ -18,7 +18,9 @@ class recordController {
     try {
       const records = await RECORDS.find({
         user_id: res.locals.userId,
-      }).toArray();
+      })
+        .sort({ date: 1 })
+        .toArray();
       res.send(records);
     } catch (err) {
       return res.status(500).json(err);
