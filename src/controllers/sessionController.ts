@@ -16,7 +16,7 @@ class sessionController {
       if (!validation) return res.sendStatus(401);
       const token = uuid();
       SESSIONS.insertOne({ user_id: user._id, token, time: Date.now() });
-      res.send({ token });
+      res.send({ token, user: user.name });
     } catch (err) {
       res.status(500).json(err);
     }
